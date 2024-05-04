@@ -1,5 +1,5 @@
-import { url, head, html, commonHead } from "@spirobel/mininext";
-head(html`<title>hello hello</title>${commonHead}`);
+import { url, head, html, commonHead, cssReset } from "@spirobel/mininext";
+head(html`<title>hello hello</title>${commonHead}${cssReset}`);
 url.set([
   ["/", (mini) => mini.html`<h1>Hello world</h1>`],
   [
