@@ -3,7 +3,7 @@
 quickstart:
 
 ```bash
-bun create spirobel/gucci
+bun create spirobel/gucci yournewproject
 ```
 
 if you don't have bun installed, run first:
