@@ -50,7 +50,6 @@ url.set([
   [
     "/",
     (mini) => {
-      console.log(mini.requrl);
       return mini.html`${navbar}
       <style>        .content {
             text-align: justify; /* Center the text horizontally */

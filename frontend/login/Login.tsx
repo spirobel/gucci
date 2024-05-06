@@ -14,7 +14,6 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import type { SolanaSignInInput } from "@solana/wallet-standard-features";
 import { BaseWalletMultiButton } from "./solana-wallet-adapter-react-ui/BaseWalletMultiButton.tsx";
 import { clusterApiUrl } from "@solana/web3.js";
-import type { PublicKey } from "@solana/web3.js";
 import { useSnackbar } from "notistack";
 import type { VariantType } from "notistack";
 import bs58 from "bs58";
@@ -78,9 +77,7 @@ export const SolanaWallet: FC = (props) => {
 
 const PortalComponent = (props: { open?: boolean }) => {
   const [isOpen, setIsOpen] = useState(props.open || false);
-  const [challenge, setChallenge] = useState<Promise<SolanaSignInInput> | null>(
-    null
-  );
+  const [challenge, setChallenge] = useState<SolanaSignInInput | null>(null);
 
   const { wallet, publicKey } = useWallet();
   useEffect(() => {
@@ -93,9 +90,17 @@ const PortalComponent = (props: { open?: boolean }) => {
         contentDiv.innerHTML = "";
       }
       setIsOpen(true);
-      //TODO fetch challenge preemptively to avoid lag when clicking sign message button
       if (publicKey) {
-        setChallenge(fetchChallenge(publicKey!));
+        const uri = window.location.href;
+        const currentUrl = new URL(uri);
+        const domain = currentUrl.host;
+        const signInData: SolanaSignInInput = {
+          domain,
+          address: publicKey.toBase58(),
+          statement:
+            "Clicking Sign or Approve only means you have proved this wallet is owned by you. This request will not trigger any blockchain transaction or cost any gas fee.",
+        };
+        setChallenge(signInData);
       }
     }
   }, [wallet?.readyState, isOpen, setChallenge, publicKey]); // Depend on wallet's readyState and isOpen state
@@ -120,22 +125,7 @@ const PortalComponent = (props: { open?: boolean }) => {
   );
 };
 
-export async function fetchChallenge(publicKey: PublicKey) {
-  const createResponse = await fetch("/login/challenge", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-    },
-    body: JSON.stringify({ address: publicKey.toBase58() }),
-  });
-  const input: SolanaSignInInput = await createResponse.json();
-  return input;
-}
-export function SignIn({
-  challenge,
-}: {
-  challenge: Promise<SolanaSignInInput>;
-}) {
+export function SignIn({ challenge }: { challenge: SolanaSignInInput }) {
   const { signIn, publicKey } = useWallet();
   const notify = useNotify();
   const [done, setDone] = useState(false);
@@ -156,7 +146,7 @@ export function SignIn({
 
       // Verify the sign-in output against the generated input server-side
 
-      const verifyResponse = await fetch("/login/checkchallenge", {
+      const verifyResponse = await fetch("/login/verifySigInMessage", {
         method: "POST",
         body: constructPayload,
       });
