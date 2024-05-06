@@ -133,7 +133,6 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
             onClick={() => {
               onDisconnect();
               setMenuOpen(false);
-              //TODO: send post to /logout
               fetch("/logout", {
                 method: "POST",
               }).then(
@@ -150,7 +149,6 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
             className="wallet-adapter-dropdown-list-item"
             onClick={() => {
               setMenuOpen(false);
-              //TODO: send post to /logout
               fetch("/logout", {
                 method: "POST",
               }).then(

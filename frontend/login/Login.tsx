@@ -110,7 +110,7 @@ const PortalComponent = (props: { open?: boolean }) => {
       {isOpen &&
         !window.loggedin &&
         createPortal(
-          <div className="white-background-block">
+          <div className="content">
             <div className="card">
               <p>
                 You need to sign a login message. We need this to make sure only

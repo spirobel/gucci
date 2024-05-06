@@ -318,30 +318,37 @@ export const solanaWalletStyles = html`<style>
     font-family: "Roboto", sans-serif;
     display: block; /* Ensure the element is a block-level element */
     margin-left: auto; /* Pushes the element to the right */
+    background: #2d4373; /* Darker shade of Facebook blue for dark theme */
+    border: thin solid #444; /* Darker border for dark theme */
+    box-shadow: 1px 1px 1px #333; /* Darker shadow for dark theme */
   }
 
   .sign-login-message-button:hover {
     cursor: pointer;
-    background: #2d4373; /* Darker shade of Facebook blue */
+    background: #1a356e; /* Even darker shade of Facebook blue for hover */
   }
+
   .sign-login-message-button-text {
     display: inline-block;
     vertical-align: middle;
+    color: white; /* Ensure text is visible against the dark background */
   }
+
   .card {
     border: 1px solid #e2e2e2;
-    background: #f9f9f9;
+    background: #222; /* Dark grey background */
     padding: 20px;
     cursor: pointer;
     transition: all 0.4s;
     border-radius: 5px;
-    box-shadow: 1px 1px 1px grey;
+    box-shadow: 1px 1px 1px #333; /* Darker shadow for dark theme */
     margin-left: auto; /* Pushes the element to the right */
+    color: #fff; /* Light text color for better contrast */
   }
 
   .card:hover {
-    background: #d3d3d3; /* Lighter grey for hover */
-    border: 1px solid #333;
-    color: #000; /* Adjusted text color for better contrast */
+    background: #333; /* Slightly lighter grey for hover */
+    border: 1px solid #444; /* Darker border for dark theme */
+    color: #fff; /* Adjusted text color for better contrast */
   }
 </style>`;
