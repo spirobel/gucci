@@ -1,19 +1,6 @@
 import type { Subprocess } from "bun";
-import { build, standardDevReloader } from "@spirobel/mininext";
+import { makeEntrypoint, standardDevReloader } from "@spirobel/mininext";
 
-async function makeEntrypoint() {
-  let module;
-
-  try {
-    // @ts-ignore
-    module = await import("./dist/backend.js");
-  } catch (error) {
-    await build();
-    // @ts-ignore
-    module = await import("./dist/backend.js");
-  }
-  return module.default as (w: any) => Promise<Response>;
-}
 dev(await makeEntrypoint());
 export default async function dev(entryPoint: (w: any) => Promise<Response>) {
   global.Reloader = standardDevReloader;
