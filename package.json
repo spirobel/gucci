@@ -8,12 +8,26 @@
     "build": "bun run build.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "drizzle-kit": "^0.20.17"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@spirobel/mininext": "^0.2.14"
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-phantom": "^0.9.24",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-react-ui": "^0.9.35",
+    "@spirobel/mininext": "^0.2.14",
+    "bs58": "^5.0.0",
+    "buffer": "^6.0.3",
+    "cookie": "^0.6.0",
+    "drizzle-orm": "^0.30.10",
+    "notistack": "^3.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
