@@ -1,7 +1,13 @@
 import { url, head, html, commonHead, cssReset } from "@spirobel/mininext";
 head(html`<title>hello hello</title>${commonHead}${cssReset}`);
 url.set([
-  ["/", (mini) => mini.html`<h1>Hello world</h1>`],
+  [
+    "/",
+    (mini) => {
+      console.log(mini.requrl);
+      return mini.html`<h1>Hello world</h1>`;
+    },
+  ],
   [
     "/bye",
     (mini) =>
