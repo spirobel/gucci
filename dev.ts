@@ -1,9 +1,20 @@
 import type { Subprocess } from "bun";
-import { standardDevReloader } from "@spirobel/mininext";
-// @ts-ignore
-import entryPoint from "./dist/backend.js";
+import { build, standardDevReloader } from "@spirobel/mininext";
 
-dev(entryPoint);
+async function makeEntrypoint() {
+  let module;
+
+  try {
+    // @ts-ignore
+    module = await import("./dist/backend.js");
+  } catch (error) {
+    await build();
+    // @ts-ignore
+    module = await import("./dist/backend.js");
+  }
+  return module.default as (w: any) => Promise<Response>;
+}
+dev(await makeEntrypoint());
 export default async function dev(entryPoint: (w: any) => Promise<Response>) {
   global.Reloader = standardDevReloader;
   Bun.serve({
