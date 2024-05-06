@@ -13,22 +13,6 @@ export function makeNameLink(name: string) {
   // Return the updated URL as a string
   return url.toString();
 }
-export function LinkTagFromIndex({ n }: { n: number }) {
-  if (names_order[n]) {
-    return (
-      <li className="wallet-adapter-dropdown-list-item" onClick={() => {}}>
-        <a href={makeNameLink(names_order[n])}>{names_order[n]}</a>
-      </li>
-    );
-  }
-  if (names[n]) {
-    return (
-      <li className="wallet-adapter-dropdown-list-item" onClick={() => {}}>
-        <a href={makeNameLink(names[n])}>{names[n]}</a>
-      </li>
-    );
-  }
-}
 
 type Props = ButtonProps & {
   labels: Omit<
@@ -103,18 +87,7 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
         return labels["no-wallet"];
       }
     }
-  }, [
-    buttonState,
-    children,
-    labels,
-    publicKey,
-    window.names[0],
-    window.names[1],
-    window.names[2],
-    window.names_order[0],
-    window.names_order[1],
-    window.names_order[2],
-  ]);
+  }, [buttonState, children, labels, publicKey]);
   console.log(publicKey);
   return (
     <div className="wallet-adapter-dropdown">
@@ -154,10 +127,6 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
         ref={ref}
         role="menu"
       >
-        <LinkTagFromIndex n={0} />
-        <LinkTagFromIndex n={1} />
-        <LinkTagFromIndex n={2} />
-
         {onDisconnect ? (
           <li
             className="wallet-adapter-dropdown-list-item"
