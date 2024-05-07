@@ -23,12 +23,9 @@ type Props = ButtonProps & {
   };
 };
 declare global {
-  var names_order: string[];
   var currentName: string | undefined;
   var loggedin: boolean;
-  var address: string;
-  var names: string[];
-  var loggedin: boolean;
+  var address: string | undefined;
 }
 
 export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
