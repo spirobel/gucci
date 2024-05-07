@@ -1,5 +1,27 @@
 import { url, head, commonHead, cssReset, Mini } from "@spirobel/mininext";
 import { solanaWalletStyles } from "./styling/solanaWalletStyles";
+import { parse } from "cookie";
+import { db } from "../db/db";
+import { sessionCookies } from "../db/schema";
+import { eq } from "drizzle-orm";
+
+export function getSessionId(req: Request) {
+  return parse(req.headers.get("Cookie") || "")["sessionId"] || null;
+}
+export async function deleteCookie(req: Request) {
+  const sessionId = getSessionId(req);
+  if (!sessionId) return;
+  const cookie = (
+    await db // check if sessionchallenge already exists
+      .select()
+      .from(sessionCookies)
+      .where(eq(sessionCookies.cookie, sessionId))
+  )[0];
+  if (!cookie.address) return;
+  await db
+    .delete(sessionCookies)
+    .where(eq(sessionCookies.address, cookie.address));
+}
 const loginScriptTag = url.frontend("/login/Login.tsx", solanaWalletStyles);
 head((mini) => mini.html`<title>hello hello</title>${commonHead}${cssReset}`);
 const navbar = (mini: Mini) => mini.html`
@@ -86,8 +108,9 @@ url.set([
   ],
   [
     "/logout",
-    url.postJson((mini) => {
+    url.postJson(async (mini) => {
       console.log(mini.form.formJson);
+      await deleteCookie(mini.req);
       return mini.json`{"loggedOut": true}${mini.headers({
         "Content-Type": "application/json; charset=utf-8",
         "Set-Cookie": `sessionId==deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT Secure; HttpOnly; SameSite=Strict; path=/`,
