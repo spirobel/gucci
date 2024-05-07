@@ -23,7 +23,7 @@
     "@solana/wallet-adapter-phantom": "^0.9.24",
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-react-ui": "^0.9.35",
-    "@spirobel/mininext": "^0.2.20",
+    "@spirobel/mininext": "^0.2.21",
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
     "cookie": "^0.6.0",

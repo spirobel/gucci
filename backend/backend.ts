@@ -76,11 +76,23 @@ url.set([
     },
   ],
   [
-    "/bye",
-    (mini) =>
-      mini.html`<h1>Goodbye world</h1>${mini.head(
-        mini.html`<title>bye bye</title>${commonHead}`
-      )}`,
+    "/login/verifySigInMessage",
+    url.postJson(
+      (mini) =>
+        mini.html`<h1>Goodbye world</h1>${mini.head(
+          mini.html`<title>bye bye</title>${commonHead}`
+        )}`
+    ),
+  ],
+  [
+    "/logout",
+    url.postJson((mini) => {
+      console.log(mini.form.formJson);
+      return mini.json`{"loggedOut": true}${mini.headers({
+        "Content-Type": "application/json; charset=utf-8",
+        "Set-Cookie": `sessionId==deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT Secure; HttpOnly; SameSite=Strict; path=/`,
+      })}`;
+    }),
   ],
 ]);
 
