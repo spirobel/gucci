@@ -137,7 +137,7 @@ export function SignIn({ challenge }: { challenge: SolanaSignInInput }) {
       const output = await signIn(input);
       console.log(input, output);
       const constructPayload = JSON.stringify({
-        input,
+        input: { address: challenge.address },
         output: {
           signedMessage: bs58.encode(output.signedMessage),
           signature: bs58.encode(output.signature),
@@ -146,7 +146,7 @@ export function SignIn({ challenge }: { challenge: SolanaSignInInput }) {
 
       // Verify the sign-in output against the generated input server-side
 
-      const verifyResponse = await fetch("/login/verifySigInMessage", {
+      const verifyResponse = await fetch("/login/verifySignInMessage", {
         method: "POST",
         body: constructPayload,
       });
