@@ -13,7 +13,11 @@ export function whatToDisplayInButton(publicKey?: PublicKey) {
     : undefined;
   const serverSideUserinfo =
     window.loggedin?.currentName || window.loggedin?.formattedAddress;
-  return serverSideUserinfo || clientSideWalletAddress;
+  return (
+    <span className="current-user-name">
+      {serverSideUserinfo || clientSideWalletAddress || "login"}
+    </span>
+  );
 }
 
 type Props = ButtonProps & {

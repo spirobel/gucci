@@ -11,7 +11,10 @@ import { getSession, logoutEndpoint, verifyLoginEndpoint } from "./user/login";
 import { formatAddress } from "../frontend/login/solana-wallet-adapter-react-ui/BaseWalletMultiButton";
 
 const loginScriptTag = url.frontend("/login/Login.tsx", solanaWalletStyles);
-head((mini) => mini.html`<title>hello hello</title>${commonHead}${cssReset}`);
+head(
+  (mini) =>
+    mini.html`<title>hello hello</title>${commonHead}${cssReset}${loginScriptTag}`
+);
 
 const MaybeLoggedin = url.data(async (mini) => {
   const sessionRow = await getSession(mini.req);
@@ -83,7 +86,9 @@ const navbar = (mini: Mini<typeof MaybeLoggedin.$Data>) => mini.html`
       <li><a href="#">About</a></li>
       <li><a href="#">Contact</a></li>
       <li><a href="#">Support</a></li>
-      <li><div id="login">          <button
+      <li><div id="login"> 
+      <div class="wallet-adapter-dropdown">         
+      <button
             class="wallet-adapter-button wallet-adapter-button-trigger"
             tabindex="0"
             type="button"
@@ -93,13 +98,13 @@ const navbar = (mini: Mini<typeof MaybeLoggedin.$Data>) => mini.html`
               ><div class="wallet-icon">👛</div></i
             >
             <span class="current-user-name">${(mini) =>
-              mini.data.loggedin?.formatedAddress}</span>
-          </button></div></li>${(mini) => {
-            console.log(mini);
-          }}
+              mini.data.loggedin?.formatedAddress || "login"}</span>
+        </button>
+        </div></div>
+        </li>
     </ul>
   </div>
-  <div id="sign-login-message-prompt"></div>${loginScriptTag}
+  <div id="sign-login-message-prompt"></div>
   <script>console.log(window.loggedin)</script>
 `;
 url.set([
