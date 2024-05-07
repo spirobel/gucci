@@ -135,7 +135,6 @@ export function SignIn({ challenge }: { challenge: SolanaSignInInput }) {
         throw new Error("Wallet does not support Sign In With Solana!");
       const input = await challenge;
       const output = await signIn(input);
-      console.log(input, output);
       const constructPayload = JSON.stringify({
         input: { address: challenge.address },
         output: {

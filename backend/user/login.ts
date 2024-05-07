@@ -8,7 +8,6 @@ import bs58 from "bs58";
 import { z } from "zod";
 import { url } from "@spirobel/mininext";
 export const logoutEndpoint = url.postJson(async (mini) => {
-  console.log(mini.form.formJson);
   await deleteCookie(mini.req);
   return mini.json`{"loggedOut": true}${mini.headers({
     "Content-Type": "application/json; charset=utf-8",
