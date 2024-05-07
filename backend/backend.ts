@@ -8,27 +8,24 @@ import {
 } from "@spirobel/mininext";
 import { solanaWalletStyles } from "./styling/solanaWalletStyles";
 import { getSession, logoutEndpoint, verifyLoginEndpoint } from "./user/login";
-import { formatAddress } from "../frontend/login/solana-wallet-adapter-react-ui/BaseWalletMultiButton";
-
+export function formatAddress(a: string) {
+  return a.slice(0, 4) + ".." + a.slice(-4);
+}
 const loginScriptTag = url.frontend("/login/Login.tsx", solanaWalletStyles);
-head(
-  (mini) =>
-    mini.html`<title>hello hello</title>${commonHead}${cssReset}${loginScriptTag}`
-);
+head((mini) => mini.html`<title>hello hello</title>${commonHead}${cssReset}`);
 
-const MaybeLoggedin = url.data(async (mini) => {
+export const MaybeLoggedin = url.data(async (mini) => {
   const sessionRow = await getSession(mini.req);
   if (sessionRow?.address) {
     return {
       loggedin: {
         address: sessionRow.address,
-        formatedAddress: formatAddress(sessionRow.address),
+        formattedAddress: formatAddress(sessionRow.address),
       },
     };
   }
   return { loggedout: true };
 });
-
 export type Loggedin = NonNullable<typeof MaybeLoggedin.$Data.loggedin>;
 export type LoggedOut = NonNullable<typeof MaybeLoggedin.$Data.loggedout>;
 
@@ -39,7 +36,7 @@ function allWeNeed(loggedin: HtmlHandler<Loggedin>) {
         return mini.html`${url.deliver(
           "loggedin",
           mini.data.loggedin
-        )}${loggedin(new Mini(mini, mini.data.loggedin))}`;
+        )}${loginScriptTag}${loggedin(new Mini(mini, mini.data.loggedin))}`;
       } else {
         return mini.html`<h1> logged out</h1>`;
       }
@@ -98,7 +95,7 @@ const navbar = (mini: Mini<typeof MaybeLoggedin.$Data>) => mini.html`
               ><div class="wallet-icon">👛</div></i
             >
             <span class="current-user-name">${(mini) =>
-              mini.data.loggedin?.formatedAddress || "login"}</span>
+              mini.data.loggedin?.formattedAddress || "login"}</span>
         </button>
         </div></div>
         </li>

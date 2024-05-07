@@ -4,6 +4,7 @@ import { BaseWalletConnectionButton } from "./BaseWalletConnectionButton";
 import type { ButtonProps } from "./Button";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import type { PublicKey } from "@solana/web3.js";
+import type { Loggedin } from "../../backendTypes";
 export function formatAddress(a: string) {
   return a.slice(0, 4) + ".." + a.slice(-4);
 }
@@ -11,8 +12,7 @@ export function whatToDisplayInButton(publicKey?: PublicKey) {
   const clientSideWalletAddress = publicKey
     ? formatAddress(publicKey.toBase58())
     : undefined;
-  const serverSideUserinfo =
-    window.loggedin?.currentName || window.loggedin?.formattedAddress;
+  const serverSideUserinfo = window.loggedin?.formattedAddress;
   return (
     <span className="current-user-name">
       {serverSideUserinfo || clientSideWalletAddress || "login"}
@@ -36,13 +36,7 @@ type Props = ButtonProps & {
   };
 };
 declare global {
-  var loggedin:
-    | {
-        address: string;
-        formattedAddress: string;
-        currentName: string | undefined;
-      }
-    | undefined;
+  var loggedin: Loggedin | undefined;
 }
 
 export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
@@ -89,7 +83,6 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
       return whatToDisplayInButton() || labels["no-wallet"];
     }
   }, [buttonState, children, labels, publicKey]);
-  console.log(publicKey);
   return (
     <div className="wallet-adapter-dropdown">
       <BaseWalletConnectionButton
