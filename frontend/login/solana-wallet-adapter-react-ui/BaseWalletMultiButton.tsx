@@ -3,8 +3,16 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BaseWalletConnectionButton } from "./BaseWalletConnectionButton";
 import type { ButtonProps } from "./Button";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import type { PublicKey } from "@solana/web3.js";
 export function formatAddress(a: string) {
   return a.slice(0, 4) + ".." + a.slice(-4);
+}
+export function whatToDisplayInButton(publicKey?: PublicKey) {
+  const clientSideWalletAddress = publicKey
+    ? formatAddress(publicKey.toBase58())
+    : undefined;
+  const serverSideUserinfo = loggedin?.currentName || loggedin?.address;
+  return serverSideUserinfo || clientSideWalletAddress;
 }
 
 type Props = ButtonProps & {
@@ -23,9 +31,9 @@ type Props = ButtonProps & {
   };
 };
 declare global {
-  var currentName: string | undefined;
-  var loggedin: boolean;
-  var address: string | undefined;
+  var loggedin:
+    | { address: string; currentName: string | undefined }
+    | undefined;
 }
 
 export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
@@ -67,19 +75,9 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
     if (children) {
       return children;
     } else if (publicKey) {
-      return (
-        <span className="current-user-name">
-          {window.currentName || formatAddress(publicKey.toBase58())}
-        </span>
-      );
-    } else if (buttonState === "connecting" || buttonState === "has-wallet") {
-      return <span className="current-user-name">{window.currentName}</span>;
+      return whatToDisplayInButton(publicKey);
     } else {
-      if (window.currentName) {
-        return <span className="current-user-name">{window.currentName}</span>;
-      } else {
-        return labels["no-wallet"];
-      }
+      return whatToDisplayInButton() || labels["no-wallet"];
     }
   }, [buttonState, children, labels, publicKey]);
   console.log(publicKey);
