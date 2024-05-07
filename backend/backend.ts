@@ -1,8 +1,8 @@
-import { url, head, html, commonHead, cssReset } from "@spirobel/mininext";
+import { url, head, commonHead, cssReset, Mini } from "@spirobel/mininext";
 import { solanaWalletStyles } from "./styling/solanaWalletStyles";
 const loginScriptTag = url.frontend("/login/Login.tsx", solanaWalletStyles);
-head(html`<title>hello hello</title>${commonHead}${cssReset}`);
-const navbar = () => html`
+head((mini) => mini.html`<title>hello hello</title>${commonHead}${cssReset}`);
+const navbar = (mini: Mini) => mini.html`
   <style>
     /* Menubar styles */
     #menubar {
