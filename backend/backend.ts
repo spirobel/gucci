@@ -2,7 +2,7 @@ import { url, head, html, commonHead, cssReset } from "@spirobel/mininext";
 import { solanaWalletStyles } from "./styling/solanaWalletStyles";
 const loginScriptTag = url.frontend("/login/Login.tsx", solanaWalletStyles);
 head(html`<title>hello hello</title>${commonHead}${cssReset}`);
-const navbar = html`
+const navbar = () => html`
   <style>
     /* Menubar styles */
     #menubar {
@@ -37,7 +37,7 @@ const navbar = html`
 
   <div id="menubar">
     <ul>
-      <li><a href="#">Home</a></li>
+      <li><a href="${url.link("/", "t")}">Home</a></li>
       <li><a href="#">About</a></li>
       <li><a href="#">Contact</a></li>
       <li><a href="#">Support</a></li>
