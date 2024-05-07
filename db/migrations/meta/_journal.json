@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1715074107355,
+      "tag": "0000_clean_patch",
+      "breakpoints": true
+    }
+  ]
+}

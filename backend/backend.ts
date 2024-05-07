@@ -41,7 +41,9 @@ const navbar = (mini: Mini) => mini.html`
       <li><a href="#">About</a></li>
       <li><a href="#">Contact</a></li>
       <li><a href="#">Support</a></li>
-      <li><div id="login">Login</div></li>
+      <li><div id="login">Login</div></li>${(mini) => {
+        console.log(mini);
+      }}
     </ul>
   </div>
   <div id="sign-login-message-prompt"></div>
