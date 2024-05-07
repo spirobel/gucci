@@ -12,7 +12,7 @@ export function whatToDisplayInButton(publicKey?: PublicKey) {
     ? formatAddress(publicKey.toBase58())
     : undefined;
   const serverSideUserinfo =
-    window.loggedin?.currentName || window.loggedin?.address;
+    window.loggedin?.currentName || window.loggedin?.formattedAddress;
   return serverSideUserinfo || clientSideWalletAddress;
 }
 
@@ -33,7 +33,11 @@ type Props = ButtonProps & {
 };
 declare global {
   var loggedin:
-    | { address: string; currentName: string | undefined }
+    | {
+        address: string;
+        formattedAddress: string;
+        currentName: string | undefined;
+      }
     | undefined;
 }
 

@@ -8,6 +8,7 @@ import {
 } from "@spirobel/mininext";
 import { solanaWalletStyles } from "./styling/solanaWalletStyles";
 import { getSession, logoutEndpoint, verifyLoginEndpoint } from "./user/login";
+import { formatAddress } from "../frontend/login/solana-wallet-adapter-react-ui/BaseWalletMultiButton";
 
 const loginScriptTag = url.frontend("/login/Login.tsx", solanaWalletStyles);
 head((mini) => mini.html`<title>hello hello</title>${commonHead}${cssReset}`);
@@ -15,7 +16,12 @@ head((mini) => mini.html`<title>hello hello</title>${commonHead}${cssReset}`);
 const MaybeLoggedin = url.data(async (mini) => {
   const sessionRow = await getSession(mini.req);
   if (sessionRow?.address) {
-    return { loggedin: { address: sessionRow.address } };
+    return {
+      loggedin: {
+        address: sessionRow.address,
+        formatedAddress: formatAddress(sessionRow.address),
+      },
+    };
   }
   return { loggedout: true };
 });
