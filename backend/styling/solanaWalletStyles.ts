@@ -1,6 +1,6 @@
-import { html } from "@spirobel/mininext";
+import { type Mini } from "@spirobel/mininext";
 
-export const solanaWalletStyles = html`<style>
+export const solanaWalletStyles = (mini: Mini) => mini.html`<style>
   @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
 
   .wallet-adapter-button {
