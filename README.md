@@ -41,3 +41,10 @@ build:
 ```bash
 bun run build
 ```
+
+migrations:
+
+```bash
+bun run db:mm # to make migrations, after editing the schema.ts file
+bun run db:migrate
+```
