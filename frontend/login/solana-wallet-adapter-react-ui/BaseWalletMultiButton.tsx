@@ -3,15 +3,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BaseWalletConnectionButton } from "./BaseWalletConnectionButton";
 import type { ButtonProps } from "./Button";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-export function makeNameLink(name: string) {
-  // Create a new URL object from the current location
-  const url = new URL(location.href);
-
-  // Use URLSearchParams to set the name query parameter
-  url.searchParams.set("name", name);
-
-  // Return the updated URL as a string
-  return url.toString();
+export function formatAddress(a: string) {
+  return a.slice(0, 4) + ".." + a.slice(-4);
 }
 
 type Props = ButtonProps & {
@@ -77,11 +70,9 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
     if (children) {
       return children;
     } else if (publicKey) {
-      const base58 = publicKey.toBase58();
-      const currentAddress = base58.slice(0, 4) + ".." + base58.slice(-4);
       return (
         <span className="current-user-name">
-          {window.currentName || currentAddress}
+          {window.currentName || formatAddress(publicKey.toBase58())}
         </span>
       );
     } else if (buttonState === "connecting" || buttonState === "has-wallet") {
