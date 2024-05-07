@@ -77,7 +77,13 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
     if (children) {
       return children;
     } else if (publicKey) {
-      return <span className="current-user-name">{window.currentName}</span>;
+      const base58 = publicKey.toBase58();
+      const currentAddress = base58.slice(0, 4) + ".." + base58.slice(-4);
+      return (
+        <span className="current-user-name">
+          {window.currentName || currentAddress}
+        </span>
+      );
     } else if (buttonState === "connecting" || buttonState === "has-wallet") {
       return <span className="current-user-name">{window.currentName}</span>;
     } else {
