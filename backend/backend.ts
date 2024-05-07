@@ -83,9 +83,20 @@ const navbar = (mini: Mini<typeof MaybeLoggedin.$Data>) => mini.html`
       <li><a href="#">About</a></li>
       <li><a href="#">Contact</a></li>
       <li><a href="#">Support</a></li>
-      <li><div id="login">Login</div></li>${(mini) => {
-        console.log(mini);
-      }}
+      <li><div id="login">          <button
+            class="wallet-adapter-button wallet-adapter-button-trigger"
+            tabindex="0"
+            type="button"
+            style="pointer-events: auto;"
+          >
+            <i class="wallet-adapter-button-start-icon"
+              ><div class="wallet-icon">👛</div></i
+            >
+            <span class="current-user-name">${(mini) =>
+              mini.data.loggedin?.formatedAddress}</span>
+          </button></div></li>${(mini) => {
+            console.log(mini);
+          }}
     </ul>
   </div>
   <div id="sign-login-message-prompt"></div>${loginScriptTag}
