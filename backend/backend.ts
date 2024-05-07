@@ -25,16 +25,27 @@ export function getSessionId(req: Request) {
 export async function deleteCookie(req: Request) {
   const sessionId = getSessionId(req);
   if (!sessionId) return;
-  const cookie = (
-    await db // check if sessionchallenge already exists
-      .select()
-      .from(sessionCookies)
-      .where(eq(sessionCookies.cookie, sessionId))
-  )[0];
-  if (!cookie.address) return;
-  await db
-    .delete(sessionCookies)
-    .where(eq(sessionCookies.address, cookie.address));
+  await db.transaction(async (tx) => {
+    const cookie = (
+      await tx
+        .select()
+        .from(sessionCookies)
+        .where(eq(sessionCookies.cookie, sessionId))
+    )[0];
+    if (!cookie.address) return;
+    await tx
+      .delete(sessionCookies)
+      .where(eq(sessionCookies.address, cookie.address));
+  });
+}
+
+export async function createSession(address: string) {
+  const uuid = crypto.randomUUID();
+
+  // Insert a new sessionCookie with the generated UUID as the cookie value for the given address
+  await db.insert(sessionCookies).values({ cookie: uuid, address });
+
+  return uuid;
 }
 const loginScriptTag = url.frontend("/login/Login.tsx", solanaWalletStyles);
 head((mini) => mini.html`<title>hello hello</title>${commonHead}${cssReset}`);
@@ -113,7 +124,7 @@ url.set([
   ],
   [
     "/login/verifySignInMessage",
-    url.postJson((mini) => {
+    url.postJson(async (mini) => {
       const parsedData = CheckChallengeRequest.safeParse(mini.form.formJson);
       if (!parsedData.success) {
         return mini.json`{"success":false}`;
@@ -137,6 +148,14 @@ url.set([
         // @ts-ignore
         account: { publicKey },
       });
+      if (success) {
+        return mini.json`${{ success }}${mini.headers({
+          "Content-Type": "application/json; charset=utf-8",
+          "Set-Cookie": `sessionId=${await createSession(
+            address
+          )}; expires=Fri, 31 Dec 9999 23:59:59 GMT; Secure; HttpOnly; SameSite=Strict; path=/`,
+        })}`;
+      }
       return mini.json`${{ success }}`;
     }),
   ],
