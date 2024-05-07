@@ -11,7 +11,8 @@ export function whatToDisplayInButton(publicKey?: PublicKey) {
   const clientSideWalletAddress = publicKey
     ? formatAddress(publicKey.toBase58())
     : undefined;
-  const serverSideUserinfo = loggedin?.currentName || loggedin?.address;
+  const serverSideUserinfo =
+    window.loggedin?.currentName || window.loggedin?.address;
   return serverSideUserinfo || clientSideWalletAddress;
 }
 

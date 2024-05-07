@@ -1,10 +1,44 @@
-import { url, head, commonHead, cssReset, Mini } from "@spirobel/mininext";
+import {
+  url,
+  head,
+  commonHead,
+  cssReset,
+  Mini,
+  type HtmlHandler,
+} from "@spirobel/mininext";
 import { solanaWalletStyles } from "./styling/solanaWalletStyles";
-import { logoutEndpoint, verifyLoginEndpoint } from "./user/login";
+import { getSession, logoutEndpoint, verifyLoginEndpoint } from "./user/login";
 
 const loginScriptTag = url.frontend("/login/Login.tsx", solanaWalletStyles);
 head((mini) => mini.html`<title>hello hello</title>${commonHead}${cssReset}`);
-const navbar = (mini: Mini) => mini.html`
+
+const MaybeLoggedin = url.data(async (mini) => {
+  const sessionRow = await getSession(mini.req);
+  if (sessionRow?.address) {
+    return { loggedin: { address: sessionRow.address } };
+  }
+  return { loggedout: true };
+});
+
+export type Loggedin = NonNullable<typeof MaybeLoggedin.$Data.loggedin>;
+export type LoggedOut = NonNullable<typeof MaybeLoggedin.$Data.loggedout>;
+
+function allWeNeed(loggedin: HtmlHandler<Loggedin>) {
+  return MaybeLoggedin.handler((mini) => {
+    return mini.html`${navbar}${() => {
+      if (mini.data.loggedin?.address) {
+        return mini.html`${url.deliver(
+          "loggedin",
+          mini.data.loggedin
+        )}${loggedin(new Mini(mini, mini.data.loggedin))}`;
+      } else {
+        return mini.html`<h1> logged out</h1>`;
+      }
+    }}`;
+  });
+}
+
+const navbar = (mini: Mini<typeof MaybeLoggedin.$Data>) => mini.html`
   <style>
     /* Menubar styles */
     #menubar {
@@ -48,13 +82,14 @@ const navbar = (mini: Mini) => mini.html`
       }}
     </ul>
   </div>
-  <div id="sign-login-message-prompt"></div>
+  <div id="sign-login-message-prompt"></div>${loginScriptTag}
+  <script>console.log(window.loggedin)</script>
 `;
 url.set([
   [
     "/",
-    (mini) => {
-      return mini.html`${navbar}
+    allWeNeed((mini) => {
+      return mini.html`
       <style>        .content {
             text-align: justify; /* Center the text horizontally */
             font-size: 1.5em; /* Increase the font size */
@@ -74,8 +109,8 @@ url.set([
       <p>
         So, if you're looking for a bag that's not just a bag, but a statement, a Gucci bag is the way to go. It's not just about the price tag; it's about the experience, the exclusivity, and the unmistakable Gucci charm that comes with it. So, next time you're in the market for a bag, remember: it's not just about what you buy, it's about how you wear it. And with a Gucci bag, you're guaranteed to make a statement that's both bold and beautiful.
       </p>
-      </div>${loginScriptTag}`;
-    },
+      </div>`;
+    }),
   ],
   ["/login/verifySignInMessage", verifyLoginEndpoint],
   ["/logout", logoutEndpoint],

@@ -60,6 +60,17 @@ export const CheckChallengeRequest = z.object({
 });
 
 export type CheckChallengeRequestType = z.infer<typeof CheckChallengeRequest>;
+export async function getSession(req: Request) {
+  const sessionId = getSessionId(req);
+  if (!sessionId) return;
+  const cookie = (
+    await db
+      .select()
+      .from(sessionCookies)
+      .where(eq(sessionCookies.cookie, sessionId))
+  )[0];
+  return cookie;
+}
 export function getSessionId(req: Request) {
   return parse(req.headers.get("Cookie") || "")["sessionId"] || null;
 }
