@@ -57,4 +57,4 @@ If you understand these 3 basic concepts you can build your own website with min
 2. templating
 3. you can use data inside of your html templates
 
-Tutorial video: [inro to mininext](https://www.youtube.com/watch?v=rz4awKntpzE)
+Tutorial video: [intro to mininext](https://www.youtube.com/watch?v=rz4awKntpzE)
