@@ -29,17 +29,17 @@ export const MaybeLoggedin = url.data(async (mini) => {
   }
   return { loggedout: true };
 });
-export type Loggedin = NonNullable<typeof MaybeLoggedin.$Data.loggedin>;
-export type LoggedOut = NonNullable<typeof MaybeLoggedin.$Data.loggedout>;
+export type Loggedin = {
+  loggedin: NonNullable<typeof MaybeLoggedin.$Data.loggedin>;
+};
 
 function allWeNeed(loggedin: HtmlHandler<Loggedin>) {
   return MaybeLoggedin.handler((mini) => {
     return mini.html`${navbar}${() => {
       if (mini.data.loggedin?.address) {
-        return mini.html`${url.deliver(
-          "loggedin",
-          mini.data.loggedin
-        )}${loggedin(new Mini(mini, mini.data.loggedin))}`;
+        return mini.html`${url.deliver("loggedin", mini.data.loggedin)}${
+          loggedin as HtmlHandler<typeof MaybeLoggedin.$Data>
+        }`;
       } else {
         return mini.html`      <style>        .content {
             text-align: justify; /* Center the text horizontally */
