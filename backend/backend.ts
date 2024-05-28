@@ -5,9 +5,12 @@ import {
   cssReset,
   Mini,
   type HtmlHandler,
+  html,
+  BasedHtml,
 } from "@spirobel/mininext";
 import { solanaWalletStyles } from "./styling/solanaWalletStyles";
 import { getSession, logoutEndpoint, verifyLoginEndpoint } from "./user/login";
+import { chatForm } from "./user/chat";
 export function formatAddress(a: string) {
   return a.slice(0, 4) + ".." + a.slice(-4);
 }
@@ -117,19 +120,26 @@ const navbar = (mini: Mini<typeof MaybeLoggedin.$Data>) => mini.html`
 `;
 url.setWebsocket<{ username: string }>({
   open(ws) {
-    const msg = `${ws.data.username} has entered the chat`;
+    const msg = html`<span style="color: orange"
+      >${ws.data.username} </span> has entered the chat</span
+    >`;
+    url.publishHtml("chat-channel", msg);
     ws.subscribe("chat-channel");
-    url.server.publish("chat-channel", msg);
   },
   message(ws, message) {
     // this is a group chat
     // so the server re-broadcasts incoming message to everyone
-    url.server.publish("chat-channel", `${ws.data.username}: ${message}`);
+    url.publishHtml(
+      "chat-channel",
+      html`<span style="color: orange">${ws.data.username}</span>:
+        ${message + ""} `
+    );
   },
   close(ws) {
-    const msg = `${ws.data.username} has left the chat`;
+    const msg = html`<span style="color: orange">${ws.data.username}</span> has
+      left the chat`;
     ws.unsubscribe("chat-channel");
-    url.server.publish("chat-channel", msg);
+    url.publishHtml("chat-channel", msg);
   },
 });
 url.set([
@@ -145,63 +155,7 @@ url.set([
             margin-top: 20px;
         }</style>
       <div class="content">
-
-<div id="chatArea"></div>
-<form id="messageForm" onsubmit="sendMessage(event);">
-    <input type="text" id="messageInput" placeholder="Type your message here...">
-    <button type="submit">Send</button>
-</form>
-     <script>
-          let socket = null;
-          function chat() {
-            function connectWebSocket() {
-              if (socket) {
-                return;
-              }
-              socket = new WebSocket("ws://localhost:3000/chat");
-
-              socket.addEventListener("message", (event) => {
-                            updateChatDisplay(event.data);
-
-              });
-
-              socket.addEventListener("close", (event) => {
-                // Reestablish the connection after 1 second
-                socket = null;
-              });
-
-              socket.addEventListener("error", (event) => {
-                socket = null;
-              });
-            }
-            connectWebSocket(); // connect to reloader, if it does not work:
-            setInterval(connectWebSocket, 1000); // retry every 1 second
-          }
-   
-      function sendMessage(event) {
-          event.preventDefault();
-          const messageInput = document.getElementById('messageInput');
-          const message = messageInput.value.trim();
-          if (!message) return; // Ignore empty messages
-
-          socket.send(message);
-          messageInput.value = ''; // Clear input field after sending
-      }
-
-      function updateChatDisplay(message) {
-          const chatArea = document.getElementById('chatArea');
-          const newMessageElement = document.createElement('p');
-          newMessageElement.textContent = message;
-          chatArea.appendChild(newMessageElement);
-          chatArea.scrollTop = chatArea.scrollHeight; // Scroll to bottom of chat area
-      }
-
-      chat();
-
-      // Initialize chat display
-      updateChatDisplay("Welcome to the chat!");
-  </script>
-        
+          ${chatForm}
       </div>`;
     }),
   ],
