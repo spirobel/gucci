@@ -1,12 +1,10 @@
 import type { Subprocess } from "bun";
 import { makeEntrypoint, standardDevReloader } from "@spirobel/mininext";
 
-dev(await makeEntrypoint());
-export default async function dev(entryPoint: (w: any) => Promise<Response>) {
+dev();
+export default async function dev() {
   global.Reloader = standardDevReloader;
-  Bun.serve({
-    fetch: entryPoint,
-  });
+  Bun.serve(await makeEntrypoint());
 
   if (!global.buildProcess) {
     global.buildProcess = Bun.spawn({
