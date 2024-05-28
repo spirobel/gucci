@@ -14,7 +14,7 @@ export function formatAddress(a: string) {
 const loginScriptTag = url.frontend("/login/Login.tsx", solanaWalletStyles);
 head(
   (mini) =>
-    mini.html`<title>hello hello</title>${commonHead}${cssReset}${loginScriptTag}`
+    mini.html`<title>mininext</title>${commonHead}${cssReset}${loginScriptTag}`
 );
 
 export const MaybeLoggedin = url.data(async (mini) => {
@@ -49,33 +49,7 @@ function allWeNeed(loggedin: HtmlHandler<Loggedin>) {
             margin-top: 20px;
         }</style>  <div class="content"><h1> logged out</h1>
         
-        <p>Once upon a time, in the bustling city of New York,
-         there was a Gucci bag that had seen the world.
-          It was not just any bag; it was a symbol of luxury, status, and sophistication.
-           This Gucci bag had been through the highs and lows of its owner's life, 
-           accompanying them on countless adventures and trips around the globe. 
-           However, one day, the bag found itself in a peculiar situation. 
-           It was no longer in the hands of its owner; it was logged out.</p> <br>
 
-<p>The bag had been left unattended in a crowded café, where it was mistakenly taken by a passerby. The passerby, a young woman named Lily, was on her way to a job interview. She was nervous and needed something to distract her from the butterflies in her stomach. She saw the Gucci bag, its rich colors and intricate design catching her eye. Without a second thought, she picked it up, thinking it was her own.
-</p> <br>
-<p>As Lily walked through the city, the bag felt heavier and heavier. It was a constant reminder of the mistake she had made. But she was too nervous to return it. She decided to keep it for a little while longer, hoping that the owner would not notice its absence.
-</p> <br>
-<p>Meanwhile, the owner of the Gucci bag, a successful entrepreneur named Alex, was frantically searching for his bag. He had left it in the café while he went to the restroom. When he returned, the bag was gone. He searched the café, the streets, and even the subway, but to no avail.
-</p> <br>
-<p>Days turned into weeks, and the Gucci bag remained with Lily. She began to feel a strange connection to the bag, as if it was a part of her. She started to notice the bag's beauty and the stories it could tell. She imagined the places it had been, the people it had met, and the adventures it had experienced.
-</p> <br>
-<p>One day, while Lily was at work, she received a call from a lost and found. They had found a Gucci bag and were trying to return it to its owner. Lily's heart pounded as she realized it was her bag. She quickly returned to the café, where she found the bag exactly where she had left it.
-</p> <br>
-<p>Upon returning the bag, Lily felt a sense of relief and a strange sense of loss. She had grown attached to the bag, and it had become a part of her. As she handed it back, she couldn't help but feel a pang of sadness.
-</p> <br>
-<p>The owner, Alex, was overjoyed to get his bag back. He thanked Lily for her honesty and kindness. He noticed the bag was a bit worn from its adventures, but it still held its charm and elegance.
-</p> <br>
-<p>From that day forward, the Gucci bag and Lily shared a special bond. They had both experienced a journey of discovery and growth. The bag had been logged out, but it had found its way back home, and so had Lily. They both realized that sometimes, the most valuable things in life are not always what we own but the experiences and connections we make along the way.
-   </p> <br>     
-        
-        
-        
         
         </div>`;
       }
@@ -118,10 +92,8 @@ const navbar = (mini: Mini<typeof MaybeLoggedin.$Data>) => mini.html`
 
   <div id="menubar">
     <ul>
-      <li><a href="${url.link("/", "t")}">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Contact</a></li>
-      <li><a href="#">Support</a></li>
+      <li><a href="#">Trollbox</a></li>
+
       <li><div id="login"> 
       <div class="wallet-adapter-dropdown">         
       <button
@@ -143,6 +115,23 @@ const navbar = (mini: Mini<typeof MaybeLoggedin.$Data>) => mini.html`
   <div id="sign-login-message-prompt"></div>
  
 `;
+url.setWebsocket<{ username: string }>({
+  open(ws) {
+    const msg = `${ws.data.username} has entered the chat`;
+    ws.subscribe("chat-channel");
+    url.server.publish("chat-channel", msg);
+  },
+  message(ws, message) {
+    // this is a group chat
+    // so the server re-broadcasts incoming message to everyone
+    url.server.publish("chat-channel", `${ws.data.username}: ${message}`);
+  },
+  close(ws) {
+    const msg = `${ws.data.username} has left the chat`;
+    ws.unsubscribe("chat-channel");
+    url.server.publish("chat-channel", msg);
+  },
+});
 url.set([
   [
     "/",
@@ -156,34 +145,77 @@ url.set([
             margin-top: 20px;
         }</style>
       <div class="content">
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-         sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
-      <br>
-      <p>
-        But wait, there's more! Imagine this: a Gucci bag so luxurious, it's not just a bag, it's a lifestyle.
-         It's not just about the leather, the stitching, or the logo. It's about the way it makes you feel when you carry it,
-          the way it makes heads turn, and the way it makes you feel like you're not just another face in the crowd, 
-          but a face that's been seen, appreciated, and coveted. It's the epitome of style, the embodiment of elegance,
-          and the ultimate accessory for those who dare to be different.
-      </p>
-      <br>
-      <p>
-        So, if you're looking for a bag that's not just a bag, but a statement,
-         a Gucci bag is the way to go. It's not just about the price tag; it's about the experience, 
-         the exclusivity, and the unmistakable Gucci charm that comes with it. So, next time you're in the market for a bag, 
-         remember: it's not just about what you buy, it's about how you wear it. And with a Gucci bag,
-          you're guaranteed to make a statement that's both bold and beautiful.
-      </p>
+
+<div id="chatArea"></div>
+<form id="messageForm" onsubmit="sendMessage(event);">
+    <input type="text" id="messageInput" placeholder="Type your message here...">
+    <button type="submit">Send</button>
+</form>
+     <script>
+          let socket = null;
+          function chat() {
+            function connectWebSocket() {
+              if (socket) {
+                return;
+              }
+              socket = new WebSocket("ws://localhost:3000/chat");
+
+              socket.addEventListener("message", (event) => {
+                            updateChatDisplay(event.data);
+
+              });
+
+              socket.addEventListener("close", (event) => {
+                // Reestablish the connection after 1 second
+                socket = null;
+              });
+
+              socket.addEventListener("error", (event) => {
+                socket = null;
+              });
+            }
+            connectWebSocket(); // connect to reloader, if it does not work:
+            setInterval(connectWebSocket, 1000); // retry every 1 second
+          }
+   
+      function sendMessage(event) {
+          event.preventDefault();
+          const messageInput = document.getElementById('messageInput');
+          const message = messageInput.value.trim();
+          if (!message) return; // Ignore empty messages
+
+          socket.send(message);
+          messageInput.value = ''; // Clear input field after sending
+      }
+
+      function updateChatDisplay(message) {
+          const chatArea = document.getElementById('chatArea');
+          const newMessageElement = document.createElement('p');
+          newMessageElement.textContent = message;
+          chatArea.appendChild(newMessageElement);
+          chatArea.scrollTop = chatArea.scrollHeight; // Scroll to bottom of chat area
+      }
+
+      chat();
+
+      // Initialize chat display
+      updateChatDisplay("Welcome to the chat!");
+  </script>
+        
       </div>`;
     }),
   ],
   ["/login/verifySignInMessage", verifyLoginEndpoint],
   ["/logout", logoutEndpoint],
+  [
+    "/chat",
+    allWeNeed((mini) => {
+      //console.log(`upgrade!`);
+      const username = mini.data.loggedin.formattedAddress;
+      const success = url.server.upgrade(mini.req, { data: { username } });
+      return mini.json`{"success": true}`;
+    }),
+  ],
 ]);
 
 export default url.install;
