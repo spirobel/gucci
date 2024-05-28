@@ -57,3 +57,46 @@ export function chatForm(mini: Mini) {
       updateChatDisplay("Welcome to the chat!");
   </script>`;
 }
+
+export function readOnlyChat(mini: Mini) {
+  return mini.html`<div id="chatArea"></div>
+     <script>
+          let socket = null;
+          function chat() {
+            function connectWebSocket() {
+              if (socket) {
+                return;
+              }
+              socket = new WebSocket("ws://localhost:3000/chatReadOnly");
+
+              socket.addEventListener("message", (event) => {
+                updateChatDisplay(event.data);
+
+              });
+
+              socket.addEventListener("close", (event) => {
+                // Reestablish the connection after 1 second
+                socket = null;
+              });
+
+              socket.addEventListener("error", (event) => {
+                socket = null;
+              });
+            }
+            connectWebSocket(); // connect to reloader, if it does not work:
+            setInterval(connectWebSocket, 1000); // retry every 1 second
+          }
+      function updateChatDisplay(message) {
+          const chatArea = document.getElementById('chatArea');
+          const newMessageElement = document.createElement('p');
+          newMessageElement.innerHTML = message;
+          chatArea.appendChild(newMessageElement);
+          chatArea.scrollTop = chatArea.scrollHeight; // Scroll to bottom of chat area
+      }
+
+      chat();
+
+      // Initialize chat display
+      updateChatDisplay("Welcome to the chat!");
+  </script>`;
+}

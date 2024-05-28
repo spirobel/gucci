@@ -10,7 +10,7 @@ import {
 } from "@spirobel/mininext";
 import { solanaWalletStyles } from "./styling/solanaWalletStyles";
 import { getSession, logoutEndpoint, verifyLoginEndpoint } from "./user/login";
-import { chatForm } from "./user/chat";
+import { chatForm, readOnlyChat } from "./user/chat";
 export function formatAddress(a: string) {
   return a.slice(0, 4) + ".." + a.slice(-4);
 }
@@ -52,7 +52,7 @@ function allWeNeed(loggedin: HtmlHandler<Loggedin>) {
             margin-top: 20px;
         }</style>  <div class="content"><h1> logged out</h1>
         
-
+          ${readOnlyChat}
         
         </div>`;
       }
@@ -120,26 +120,29 @@ const navbar = (mini: Mini<typeof MaybeLoggedin.$Data>) => mini.html`
 `;
 url.setWebsocket<{ username: string }>({
   open(ws) {
-    const msg = html`<span style="color: orange"
+    if (ws.data.username) {
+      const msg = html`<span style="color: orange"
       >${ws.data.username} </span> has entered the chat</span
     >`;
-    url.publishHtml("chat-channel", msg);
+      url.publishHtml("chat-channel", msg);
+    }
     ws.subscribe("chat-channel");
   },
   message(ws, message) {
+    if (!ws.data.username) return;
     // this is a group chat
     // so the server re-broadcasts incoming message to everyone
-    url.publishHtml(
-      "chat-channel",
-      html`<span style="color: orange">${ws.data.username}</span>:
-        ${message + ""} `
-    );
+    const msg = html`<span style="color: orange">${ws.data.username}</span>:
+      ${message + ""}`;
+    url.publishHtml("chat-channel", msg);
   },
   close(ws) {
-    const msg = html`<span style="color: orange">${ws.data.username}</span> has
-      left the chat`;
-    ws.unsubscribe("chat-channel");
-    url.publishHtml("chat-channel", msg);
+    if (ws.data.username) {
+      const msg = html`<span style="color: orange">${ws.data.username}</span>
+        has left the chat`;
+      ws.unsubscribe("chat-channel");
+      url.publishHtml("chat-channel", msg);
+    }
   },
 });
 url.set([
@@ -169,6 +172,14 @@ url.set([
       const success = url.server.upgrade(mini.req, { data: { username } });
       return mini.json`{"success": true}`;
     }),
+  ],
+  [
+    "/chatReadOnly",
+    (mini) => {
+      //console.log(`upgrade!`);
+      const success = url.server.upgrade(mini.req, { data: { username: "" } });
+      return mini.json`{"success": true}`;
+    },
   ],
 ]);
 
